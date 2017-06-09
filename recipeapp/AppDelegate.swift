@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Firebase
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +17,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        loadMainPages()
+        FIRApp.configure()
+        
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
+                if !accepted {
+                    print("Notification access denied.")
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+        
         return true
     }
 
@@ -44,3 +59,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+extension AppDelegate {
+    func loadMainPages() {
+        if window == nil { window = UIWindow(frame: UIScreen.main.bounds) }
+        
+        self.window?.rootViewController = UINavigationController(rootViewController: CategoriesController())
+        self.window?.makeKeyAndVisible()
+    }
+}
